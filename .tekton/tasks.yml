@@ -18,3 +18,25 @@ spec:
       script: |
         echo "Cleaning up workspace at $WORKSPACE_SOURCE_PATH"
         rm -rf $WORKSPACE_SOURCE_PATH/*
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nose
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: args
+      description: Arguments to pass to nose
+      type: string
+      default: "-v"
+  steps:
+    - name: nosetests
+      image: python:3.9-slim
+      workingDir: "$(workspaces.source.path)"
+      script: |
+        echo "Running nosetests with arguments: $(params.args)"
+        nosetests $(params.args)
+        
